@@ -1,0 +1,73 @@
+def getSample(path):
+    sample = []
+    with open(path,'r') as f:
+        print("--The sample is loading--")
+        while 1:
+            line = f.readline().split( )
+            if not line:
+                break
+            sample.append(line)
+        print(sample)
+    f.close()
+    return sample
+
+def Bayesian(sign,sample):
+    Total = int()
+    T_X1 = int()
+    T_X2 = int()
+    F_X1 = int()
+    F_X2 = int()
+    X1K = []
+    X2K = []
+    OC = []
+
+    trueSample = int()
+    falseSample = int()
+    for i in range(0,len(sample)):
+        Total += 1
+
+        if(sample[i][0] not in X1K):
+            X1K.append(sample[i][0])
+        if(sample[i][1] not in X2K):
+            X2K.append(sample[i][1])
+        if(sample[i][2] not in OC):
+            OC.append(sample[i][2])
+
+        if(sample[i][2]=="1"):
+            trueSample += 1
+            if(sample[i][0]==sign[0]):
+                T_X1 += 1
+            if(sample[i][1]==sign[1]):
+                T_X2 += 1
+        elif(sample[i][2]=="-1"):
+            falseSample += 1
+            if (sample[i][0] == sign[0]):
+                F_X1 += 1
+            if (sample[i][1] == sign[1]):
+                F_X2 += 1
+    print("Total number of samples:", Total, "\t", "\t", "True:", trueSample, "\t", "False:", falseSample)
+
+    #Naive Bayaesian
+    NtruePB = (T_X1*T_X2)/(Total*trueSample)
+    NfalsePB = (F_X1*F_X2)/(Total*falseSample)
+    print('\n',"Naive Bayesian: ")
+    print("True protent:",NtruePB,"\t","False protent:",NfalsePB)
+    if(NtruePB>NfalsePB):
+        print("The predict of sample is True(1)!")
+    else:
+        print("The predict of sample is False(-1)!")
+
+    #Bayesian
+    k = 1; #This is lemda
+    truePB = (trueSample+k) / (Total+len(OC)*k) * (T_X1+k) / (trueSample+len(X1K)*k) * (T_X2+k) / (trueSample+len(X2K)*k)
+    falsePB = (falseSample+k) / (Total+len(OC)*k)*(F_X1+k) / (falseSample+len(X1K)*k) * (F_X2+k) / (falseSample+len(X2K)*k)
+    print('\n', "Bayesian: ")
+    print("True protent:", truePB, "\t", "False protent:", falsePB)
+    if (truePB > falsePB):
+        print("The predict of sample is True(1)!")
+    else:
+        print("The predict of sample is False(-1)!")
+
+Sample = getSample('estimation_sample.txt')
+Sign = ['2','M']
+Bayesian(Sign,Sample)
